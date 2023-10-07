@@ -1,2 +1,2 @@
 # PingMe
-basic communicator
+basic python based communicator

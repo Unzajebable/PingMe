@@ -25,7 +25,7 @@ def create_db():
         cursor = connection.cursor()
         sql2 = """CREATE TABLE users(
         id serial PRIMARY KEY,
-        username varchar(32),
+        username varchar(32) UNIQUE,
         hashed_password varchar(80));"""
         cursor.execute(sql2)
         cursor.close()

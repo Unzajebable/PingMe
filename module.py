@@ -21,11 +21,15 @@ class User:
     @hashed_password.setter
     def hashed_password(self, password):
         self.set_password(password)
+        print("password set")
 
-    #@new_hashed_password.setter
+    #@self.new_hashed_password.setter
     def new_hashed_password(self, old_password, new_password):
         if check_password(old_password, self._hashed_password):
             self.set_password(new_password)
+            print("New password has been set")
+        else:
+            print("Old password incorrect - didn't change the password")
 
     def save_to_db(self, cursor):
         if self._id == -1:
