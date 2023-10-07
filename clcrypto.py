@@ -40,7 +40,7 @@ def hash_password(password, salt=None):
     return salt + t_sha.hexdigest()
 
 
-def check_password(pass_to_check, hashed):
+def check_password(password_to_check, hashed):
     """
     Checks the password.
     The function does the following:
@@ -50,7 +50,7 @@ def check_password(pass_to_check, hashed):
         - compares `hashed` with hashed `pass_to_check`.
         - returns True if password is correct, or False. :)
 
-    :param str pass_to_check: not hashed password
+    :param str password_to_check: not hashed password
     :param str hashed: hashed password
 
     :rtype: bool
@@ -64,7 +64,7 @@ def check_password(pass_to_check, hashed):
     hash_to_check = hashed[16:]
 
     # hash password with extracted salt
-    new_hash = hash_password(pass_to_check, salt)
+    new_hash = hash_password(password_to_check, salt)
 
     # compare hashes. If equal, return True
     return new_hash[16:] == hash_to_check
