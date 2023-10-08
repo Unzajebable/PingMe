@@ -128,16 +128,16 @@ class Message:
             messages.append(loaded_message)
         return messages
 
-    # def show_all_my_messages(self, cursor):
-    #     my_id = self.from_id
-    #     sql = "SELECT to_id, message, created_date FROM messages WHERE from_id=%s"
-    #     messages = []
-    #     cursor.execute(sql, (my_id, ))
-    #     for row in cursor.fetchall():
-    #         to_id, message, created_date = row
-    #         loaded_message = Message()
-    #         loaded_message.to_id = to_id
-    #         loaded_message.message = message
-    #         loaded_message.created_date = created_date
-    #         messages.append(loaded_message)
-    #     return messages
+    @staticmethod
+    def show_all_my_messages(my_id, cursor):
+        sql = "SELECT to_id, message, created_date FROM messages WHERE from_id=%s"
+        messages = []
+        cursor.execute(sql, (my_id, ))
+        for row in cursor.fetchall():
+            to_id, message, created_date = row
+            loaded_message = Message()
+            loaded_message.to_id = to_id
+            loaded_message.message = message
+            loaded_message.created_date = created_date
+            messages.append(loaded_message)
+        return messages
