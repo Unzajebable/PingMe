@@ -23,7 +23,7 @@ class User:
         self.set_password(password)
         print("password set")
 
-    #@self.new_hashed_password.setter
+    #@new_hashed_password.setter
     def new_hashed_password(self, old_password, new_password):
         if check_password(old_password, self._hashed_password):
             self.set_password(new_password)
@@ -61,7 +61,7 @@ class User:
     @staticmethod
     def load_user_by_username(cursor, usersname):
         sql = "SELECT id, username, hashed_password FROM users WHERE username=%s"
-        cursor.execute(sql, (usersname,))  # (usersname, ) - cause we need a tuple
+        cursor.execute(sql, (usersname, ))  # (usersname, ) - cause we need a tuple
         data = cursor.fetchone()
         if data:
             id_, username, hashed_password = data

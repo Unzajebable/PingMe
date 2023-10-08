@@ -41,5 +41,5 @@ def create_db():
 
     cursor.close()
     connection.close()
-    print("database and tables created and fully operational")
+    print("database and tables exist and are fully operational")
 
