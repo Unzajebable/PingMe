@@ -19,16 +19,15 @@ args = parser.parse_args()
 
 
 def new_user(username, password, cursor):
-    while True:
-        if len(password) < 8:
-            password = input("Password has to have at least 8 characters: ")
-        else:
-            try:
-                new_user = User(username, password)
-                new_user.save_to_db(cursor)
-                print("New user created!")
-            except UniqueViolation as err:
-                print("User already exists. ", err)
+    if len(password) < 8:
+        password = input("Password has to have at least 8 characters: ")
+    else:
+        try:
+            new_user = User(username, password)
+            new_user.save_to_db(cursor)
+            print("New user created!")
+        except UniqueViolation as err:
+            print("User already exists. ", err)
 
 
 def user_edit(username, old_pass, new_password, cursor):
@@ -36,25 +35,25 @@ def user_edit(username, old_pass, new_password, cursor):
     if not curr_user:
         print("User does not exist!")
     elif check_password(old_pass, curr_user.hashed_password):
-        while True:
-            if len(new_password) < 8:
-                new_password = input("New password also has to have at least 8 characters: ")
-            else:
-                curr_user.hashed_password = new_password
-                curr_user.save_to_db(cursor)
-                print(f"Password for {username} changed!")
-                break
+        if len(new_password) < 8:
+            new_password = input("New password also has to have at least 8 characters: ")
+        else:
+            curr_user.hashed_password = new_password
+            curr_user.save_to_db(cursor)
+            print(f"Password for {username} changed!")
     else:
         print("Incorrect password")
 
 
 def delet_me(username, password, cursor):
     curr_user = User.load_user_by_username(cursor, username)
-    if curr_user:
-        if check_password(password, curr_user.hashed_password):
-            curr_user.delete(cursor)
-            curr_user.save_to_db(cursor)
-            print(username, "successfully deleted!")
+    if not curr_user:
+        print("User does not exist!")
+    elif check_password(password, curr_user.hashed_password):
+        curr_user.delete(cursor)
+        print(username, "successfully deleted!")
+    else:
+        print("Incorrect password!")
 
 
 def list_users(cursor):

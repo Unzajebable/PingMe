@@ -21,7 +21,7 @@ send a message:
 ​`python/python3 PingMe.py -u [username here] -p [password here] -l`
 
 show all your messages:
-​​`python/python3 PingMe.py -u [username here] -p [password here] -t [target username here] -s [message content here]`
+​​`python/python3 PingMe.py -u [username here] -p [password here] -t [target username here] -s "[message content here]"`
 
 ### when entering a command do not use brackets and figure out which python/python3 command works for your OS
 

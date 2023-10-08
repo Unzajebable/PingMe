@@ -1,7 +1,7 @@
 import argparse
 from psycopg2 import connect, OperationalError
 from module import User, Message
-from user_handling import check_password
+from clcrypto import check_password
 
 
 parser = argparse.ArgumentParser()
@@ -11,18 +11,27 @@ parser.add_argument("-t", "--to", help="addressee username")
 parser.add_argument("-s", "--send", help="message content")
 parser.add_argument("-l", "--list", help="show all messages", action="store_true")
 
-args = parser.parse_args()
+arg = parser.parse_args()
 
 
 def list_messages(username, cursor):
-    curr_user = User.load_user_by_username(cursor, username)
-    messages = Message.show_all_my_messages(curr_user.id, cursor)
+    messages = Message.load_all_messages(cursor, username.id)
     for message in messages:
         from_ = User.load_user_by_id(cursor, message.from_id)
-        print(30 * "=")
-        print(f"from: {from_.username} | date: {message.created_date}")
+        print(50 * "=")
+        print(f"| from: {from_.username} | date: {message.created_date} |")
+        print()
         print(message.message)
-        print(30 * "=")
+        print(50 * "_")
+    # curr_user = User.load_user_by_username(username, cursor)
+    # messages = Message.show_all_my_messages(curr_user.id, cursor)
+    # for message in messages:
+    #     from_ = User.load_user_by_id(cursor, (message.from_id, ))
+    #     print(30 * "=")
+    #     print(f"from: {from_.username} | date: {message.created_date}")
+    #     print(message.message)
+    #     print(30 * "=")
+    #====================================================================
     # if new_user(username, password, cursor):
     #     curr_user = User.load_user_by_username(cursor, username)
     #     if curr_user:
@@ -34,8 +43,8 @@ def list_messages(username, cursor):
 
 
 def send_message(username, target, message, cursor):
-    curr_user = User.load_user_by_username(cursor, username)
-    target_user = User.load_user_by_username(cursor, target)
+    curr_user = User.load_user_by_username(username, cursor)
+    target_user = User.load_user_by_username(target, cursor)
     if target_user:
         new_msg = Message(curr_user.id, target_user.id, message)
         new_msg.save_to_db(cursor)
@@ -50,13 +59,13 @@ if __name__ == '__main__':
         connection.autocommit = True
         cursor = connection.cursor()
 
-        if args.username and args.password:
-            curr_user = User.load_user_by_username(cursor, args.username)
-            if check_password(args.password, curr_user.hashed_password):
-                if args.list:
+        if arg.username and arg.password:
+            curr_user = User.load_user_by_username(arg.username, cursor)
+            if check_password(arg.password, curr_user.hashed_password):
+                if arg.list:
                     list_messages(curr_user, cursor)
-                elif args.to and args.send:
-                    send_message(args.username, args.to, args.send, cursor)
+                elif arg.to and arg.send:
+                    send_message(arg.username, arg.to, arg.send, cursor)
                 else:
                     parser.print_help()
             else:
@@ -64,7 +73,7 @@ if __name__ == '__main__':
         else:
             print("username and password are required")
             parser.print_help()
-        cursor.close()
+
         connection.close()
     except OperationalError as err:
         print("Connection Error: ", err)

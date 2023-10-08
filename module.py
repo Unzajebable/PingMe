@@ -1,4 +1,4 @@
-from clcrypto import hash_password, check_password
+from clcrypto import hash_password
 
 
 class User:
@@ -21,7 +21,6 @@ class User:
     @hashed_password.setter
     def hashed_password(self, password):
         self.set_password(password)
-        print("password set")
 
     def save_to_db(self, cursor):
         if self._id == -1:
@@ -51,9 +50,9 @@ class User:
             return loaded_user
 
     @staticmethod
-    def load_user_by_username(cursor, usersname):
+    def load_user_by_username(username, cursor):
         sql = "SELECT id, username, hashed_password FROM users WHERE username=%s"
-        cursor.execute(sql, (usersname, ))  # (usersname, ) - cause we need a tuple
+        cursor.execute(sql, (username,))  # (username, ) - cause we need a tuple
         data = cursor.fetchone()
         if data:
             id_, username, hashed_password = data
@@ -105,31 +104,32 @@ class Message:
             return True
 
     @staticmethod
-    def load_all_messages(cursor):
-        sql = "SELECT id, from_id, to_id, message, created_date FROM messages"
+    def load_all_messages(cursor, user_id=None):
+        if user_id:
+            sql = "SELECT id, from_id, to_id, message, created_date FROM messages WHERE to_id=%s"
+            cursor.execute(sql, (user_id,))  # (user_id, ) - cause we need a tuple
+        else:
+            sql = "SELECT id, from_id, to_id, message, created_date FROM messages"
+            cursor.execute(sql)
         messages = []
-        cursor.execute(sql)
         for row in cursor.fetchall():
             id_, from_id, to_id, message, created_date = row
-            loaded_message = Message()
+            loaded_message = Message(from_id, to_id, message)
             loaded_message._id = id_
-            loaded_message.from_id = from_id
-            loaded_message.to_id = to_id
-            loaded_message.message = message
             loaded_message.created_date = created_date
             messages.append(loaded_message)
         return messages
 
-    @staticmethod
-    def show_all_my_messages(my_id, cursor):
-        sql = "SELECT to_id, message, created_date FROM messages WHERE from_id=%s"
-        messages = []
-        cursor.execute(sql, (my_id, ))
-        for row in cursor.fetchall():
-            to_id, message, created_date = row
-            loaded_message = Message()
-            loaded_message.to_id = to_id
-            loaded_message.message = message
-            loaded_message.created_date = created_date
-            messages.append(loaded_message)
-        return messages
+    # @staticmethod
+    # def show_all_my_messages(my_id, cursor):
+    #     sql = "SELECT to_id, message, created_date FROM messages WHERE from_id=%s"
+    #     messages = []
+    #     cursor.execute(sql, (my_id, ))
+    #     for row in cursor.fetchall():
+    #         to_id, message, created_date = row
+    #         loaded_message = Message()
+    #         loaded_message.to_id = to_id
+    #         loaded_message.message = message
+    #         loaded_message.created_date = created_date
+    #         messages.append(loaded_message)
+    #     return messages
