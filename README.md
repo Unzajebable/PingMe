@@ -5,13 +5,13 @@ Basic python based communicator.
 
 `open Command prompt > input a path to folder location`
 
-create a new user:
+create a new account:
 `python/python3 user_handling.py -u [username here] -p [password here]`
 
 ​change your password:
 `python/python3 user_handling.py -u [username here] -p [password here] -e -n [new password here]`
 
-delete a user:
+delete your account:
 ​`python/python3 user_handling.py -u [username here] -p [password here] -d`
 
 list all users:
