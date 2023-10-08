@@ -13,7 +13,7 @@ def create_db():
         cursor.execute(sql1)
     except Exception as err:
         create_all = False
-        print('FYI:', err)
+        #print('FYI:', err)
         #print("Exception type:", type(err))
 
     if create_all:
@@ -38,8 +38,11 @@ def create_db():
         created_date timestamp default current_timestamp,
         message text);"""
         cursor.execute(sql3)
+        print("Database and tables created successfully")
+    else:
+        print("database and tables exist and are fully operational")
 
     cursor.close()
     connection.close()
-    print("database and tables exist and are fully operational")
+
 

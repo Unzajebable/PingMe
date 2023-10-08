@@ -1,9 +1,7 @@
 import argparse
-from create_db import create_db
 from psycopg2 import connect, OperationalError
 from module import User, Message
-from clcrypto import check_password
-from user_handling import login_or_new_user
+from user_handling import check_password
 
 
 parser = argparse.ArgumentParser()
@@ -16,15 +14,23 @@ parser.add_argument("-l", "--list", help="show all messages", action="store_true
 args = parser.parse_args()
 
 
-def list_messages(username, password, cursor):
-    if login_or_new_user(username, password, cursor):
-        curr_user = User.load_user_by_username(cursor, username)
-        if curr_user:
-            Message.show_all_my_messages(curr_user.id, cursor)
-        else:
-            print("User not found")
-    else:
-        print("Failed to log in, check your credentials")
+def list_messages(username, cursor):
+    curr_user = User.load_user_by_username(cursor, username)
+    messages = Message.show_all_my_messages(curr_user.id, cursor)
+    for message in messages:
+        from_ = User.load_user_by_id(cursor, message.from_id)
+        print(30 * "=")
+        print(f"from: {from_.username} | date: {message.created_date}")
+        print(message.message)
+        print(30 * "=")
+    # if new_user(username, password, cursor):
+    #     curr_user = User.load_user_by_username(cursor, username)
+    #     if curr_user:
+    #         return Message.show_all_my_messages(curr_user.id, cursor)
+    #     else:
+    #         print("User not found")
+    # else:
+    #     print("Failed to log in, check your credentials")
 
 
 def send_message(username, target, message, cursor):
@@ -44,16 +50,20 @@ if __name__ == '__main__':
         connection.autocommit = True
         cursor = connection.cursor()
 
-        if args.username and args.password and args.to and args.send:
-            if login_or_new_user(args.username, args.password, cursor):
-                send_message(args.username, args.to, args.send, cursor)
+        if args.username and args.password:
+            curr_user = User.load_user_by_username(cursor, args.username)
+            if check_password(args.password, curr_user.hashed_password):
+                if args.list:
+                    list_messages(curr_user, cursor)
+                elif args.to and args.send:
+                    send_message(args.username, args.to, args.send, cursor)
+                else:
+                    parser.print_help()
             else:
-                print("Failed to log in, check your credentials")
-        elif args.username and args.password and args.list:
-            list_messages(args.username, args.password, cursor)
+                print("Incorrect password or User does not exists!")
         else:
+            print("username and password are required")
             parser.print_help()
-
         cursor.close()
         connection.close()
     except OperationalError as err:

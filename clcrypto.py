@@ -1,5 +1,9 @@
 import hashlib
 import random
+import string
+
+
+ALPHABET = string.ascii_uppercase + string.ascii_lowercase + string.digits
 
 
 def hash_password(password, salt=None):
@@ -78,8 +82,7 @@ def generate_salt():
     :return: str with generated salt
     """
     salt = ""
-    alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
     for i in range(0, 16):
         # get a random element from the iterable
-        salt += random.choice(alphabet)
+        salt += random.choice(ALPHABET)
     return salt
